@@ -1,3 +1,4 @@
+
 package com.example.securebank.core.data.local.entity
 
 import androidx.room.Entity
@@ -13,5 +14,7 @@ data class BankAccountEntity(
 
     val accountNumber: String,
 
-    val balanceInPaise: Long
+    val balanceInMinorUnits: Long,
+
+    val currency: String = "INR"
 )

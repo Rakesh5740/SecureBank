@@ -11,6 +11,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import com.example.securebank.navigation.SecureBankNavGraph
 import com.example.securebank.presentation.transfer.TransferScreen
 import com.example.securebank.ui.theme.SecureBankTheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -22,7 +23,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             SecureBankTheme {
-                TransferScreen()
+                SecureBankNavGraph()
             }
         }
     }

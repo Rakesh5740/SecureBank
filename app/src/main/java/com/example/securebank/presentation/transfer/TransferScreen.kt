@@ -14,6 +14,7 @@ import java.math.RoundingMode
 
 @Composable
 fun TransferScreen(
+    onViewHistory: (String) -> Unit,
     viewModel: TransferViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -53,14 +54,14 @@ fun TransferScreen(
         OutlinedTextField(
             value = amount,
             onValueChange = { amount = it },
-            label = { Text("Amount (₹)") },
+            label = { Text("Amount (major units)") },
             modifier = Modifier.fillMaxWidth(),
             singleLine = true
         )
 
         Button(
             onClick = {
-                val amountInPaise = runCatching {
+                val amountInMinorUnits = runCatching {
                     BigDecimal(amount)
                         .movePointRight(2)
                         .setScale(0, RoundingMode.UNNECESSARY)
@@ -70,13 +71,13 @@ fun TransferScreen(
                 if (
                     sourceAccountId.isNotBlank() &&
                     beneficiaryId.isNotBlank() &&
-                    amountInPaise != null &&
-                    amountInPaise > 0
+                    amountInMinorUnits  != null &&
+                    amountInMinorUnits  > 0
                 ) {
                     viewModel.transferFunds(
                         sourceAccountId = sourceAccountId.trim(),
                         beneficiaryId = beneficiaryId.trim(),
-                        amountInPaise = amountInPaise
+                        amountInMinorUnits  = amountInMinorUnits
                     )
                 }
             },
@@ -117,6 +118,19 @@ fun TransferScreen(
                     Text("Try again")
                 }
             }
+        }
+
+        TextButton(
+            onClick = {
+                val accountId = sourceAccountId.trim()
+
+                if (accountId.isNotBlank()) {
+                    onViewHistory(accountId)
+                }
+            },
+            enabled = sourceAccountId.isNotBlank()
+        ) {
+            Text("View Transfer History")
         }
     }
 }

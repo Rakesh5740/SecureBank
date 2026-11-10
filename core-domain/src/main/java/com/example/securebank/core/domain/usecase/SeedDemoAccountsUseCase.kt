@@ -14,13 +14,13 @@ class SeedDemoAccountsUseCase(
                 id = "ACC001",
                 accountHolderName = "Rahul Sharma",
                 accountNumber = "123456789001",
-                balanceInPaise = 1_000_000L
+                balanceInMinorUnits = 1_000_000L
             ),
             BankAccount(
                 id = "ACC002",
                 accountHolderName = "Amit Verma",
                 accountNumber = "123456789002",
-                balanceInPaise = 500_000L
+                balanceInMinorUnits = 500_000L
             )
         )
 

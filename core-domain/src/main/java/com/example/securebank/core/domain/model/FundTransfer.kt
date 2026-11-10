@@ -5,7 +5,8 @@ data class FundTransfer(
     val id: String,
     val sourceAccountId: String,
     val beneficiaryId: String,
-    val amountInPaise: Long,
+    val amountInMinorUnits: Long,
+    val currency: String = "INR",
     val status: TransferStatus
 )
 

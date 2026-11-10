@@ -1,8 +1,9 @@
-
 package com.example.securebank.di
 
 import com.example.securebank.core.domain.repository.BankRepository
+import com.example.securebank.core.domain.usecase.FetchRemoteAccountsUseCase
 import com.example.securebank.core.domain.usecase.GetAccountUseCase
+import com.example.securebank.core.domain.usecase.GetTransferHistoryUseCase
 import com.example.securebank.core.domain.usecase.SeedDemoAccountsUseCase
 import com.example.securebank.core.domain.usecase.TransferFundsUseCase
 import com.example.securebank.core.domain.usecase.ValidateTransferUseCase
@@ -49,5 +50,19 @@ object UseCaseModule {
         repository: BankRepository
     ): SeedDemoAccountsUseCase {
         return SeedDemoAccountsUseCase(repository)
+    }
+
+    @Provides
+    fun provideGetTransferHistoryUseCase(
+        repository: BankRepository
+    ): GetTransferHistoryUseCase {
+        return GetTransferHistoryUseCase(bankRepository = repository)
+    }
+
+    @Provides
+    fun provideFetchRemoteAccountsUseCase(
+        bankRepository: BankRepository
+    ): FetchRemoteAccountsUseCase {
+        return FetchRemoteAccountsUseCase(bankRepository)
     }
 }

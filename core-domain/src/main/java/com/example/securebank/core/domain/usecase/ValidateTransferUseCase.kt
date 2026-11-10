@@ -22,7 +22,7 @@ class ValidateTransferUseCase {
             )
         }
 
-        if (amountInPaise > sourceAccount.balanceInPaise) {
+        if (amountInPaise > sourceAccount.balanceInMinorUnits) {
             return TransferValidationResult.Invalid(
                 TransferValidationResult.Reason.INSUFFICIENT_BALANCE
             )

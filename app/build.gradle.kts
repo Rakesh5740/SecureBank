@@ -60,7 +60,10 @@ dependencies {
     ksp(libs.hilt.compiler)
 
     implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
-
+    implementation(libs.androidx.navigation.compose)
     implementation(project(":core-domain"))
     implementation(project(":core-data"))
+
+    testImplementation("androidx.arch.core:core-testing:2.2.0")
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:<same-version-as-your-coroutines-core>")
 }

@@ -4,6 +4,7 @@ package com.example.securebank.core.domain.usecase
 import com.example.securebank.core.domain.model.FundTransfer
 import com.example.securebank.core.domain.model.TransferStatus
 import com.example.securebank.core.domain.repository.BankRepository
+import kotlinx.coroutines.flow.first
 
 class TransferFundsUseCase(
     private val getAccountUseCase: GetAccountUseCase,
@@ -19,7 +20,7 @@ class TransferFundsUseCase(
             // 1. Get sender account
             val sourceAccount = getAccountUseCase(
                 transfer.sourceAccountId
-            ) ?: return Result.failure(
+            ).first() ?: return Result.failure(
                 IllegalArgumentException("Source account not found")
             )
 
@@ -27,7 +28,7 @@ class TransferFundsUseCase(
             val validationResult = validateTransferUseCase(
                 sourceAccount = sourceAccount,
                 beneficiaryId = transfer.beneficiaryId,
-                amountInPaise = transfer.amountInPaise
+                amountInPaise = transfer.amountInMinorUnits
             )
 
             // 3. Handle validation result

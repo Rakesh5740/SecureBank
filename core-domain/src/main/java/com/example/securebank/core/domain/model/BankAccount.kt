@@ -5,5 +5,6 @@ data class BankAccount(
     val id: String,
     val accountHolderName: String,
     val accountNumber: String,
-    val balanceInPaise: Long
+    val balanceInMinorUnits: Long,
+    val currency: String = "INR"
 )

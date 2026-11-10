@@ -8,7 +8,8 @@ fun BankAccountEntity.toDomain(): BankAccount {
         id = id,
         accountHolderName = accountHolderName,
         accountNumber = accountNumber,
-        balanceInPaise = balanceInPaise
+        balanceInMinorUnits = balanceInMinorUnits,
+        currency = currency
     )
 }
 
@@ -17,6 +18,7 @@ fun BankAccount.toEntity(): BankAccountEntity {
         id = id,
         accountHolderName = accountHolderName,
         accountNumber = accountNumber,
-        balanceInPaise = balanceInPaise
+        balanceInMinorUnits = balanceInMinorUnits,
+        currency = currency
     )
 }

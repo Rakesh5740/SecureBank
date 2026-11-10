@@ -1,22 +1,27 @@
+
 package com.example.securebank.presentation.transfer
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.securebank.core.domain.model.FundTransfer
 import com.example.securebank.core.domain.model.TransferStatus
+import com.example.securebank.core.domain.usecase.GetAccountUseCase
 import com.example.securebank.core.domain.usecase.SeedDemoAccountsUseCase
 import com.example.securebank.core.domain.usecase.TransferFundsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class TransferViewModel @Inject constructor(
     private val transferFundsUseCase: TransferFundsUseCase,
-    private val seedDemoAccountsUseCase: SeedDemoAccountsUseCase
+    private val seedDemoAccountsUseCase: SeedDemoAccountsUseCase,
+    private val getAccountUseCase: GetAccountUseCase
 ) : ViewModel() {
 
     private val _uiState =
@@ -37,36 +42,63 @@ class TransferViewModel @Inject constructor(
     fun transferFunds(
         sourceAccountId: String,
         beneficiaryId: String,
-        amountInPaise: Long
+        amountInMinorUnits: Long
     ) {
         if (!_isInitialized.value) return
 
         viewModelScope.launch {
             _uiState.value = TransferUiState.Loading
 
-            val transfer = FundTransfer(
-                id = java.util.UUID.randomUUID().toString(),
-                sourceAccountId = sourceAccountId,
-                beneficiaryId = beneficiaryId,
-                amountInPaise = amountInPaise,
-                status = TransferStatus.PENDING
-            )
+            try {
+                val sourceAccount = getAccountUseCase(sourceAccountId).first()
+                    ?: throw IllegalArgumentException("Source account not found")
 
-            val result = transferFundsUseCase(transfer)
+                val beneficiaryAccount = getAccountUseCase(beneficiaryId).first()
+                    ?: throw IllegalArgumentException("Beneficiary account not found")
 
-            _uiState.value = result.fold(
-                onSuccess = {
-                    TransferUiState.Success(
-                        message = "Fund transfer successful",
-                        transactionId = it.id
-                    )
-                },
-                onFailure = {
-                    TransferUiState.Error(
-                        message = it.message ?: "Transfer failed"
+                if (sourceAccount.currency != beneficiaryAccount.currency) {
+                    throw IllegalArgumentException(
+                        "Cannot transfer between different currencies"
                     )
                 }
-            )
+
+                if (amountInMinorUnits <= 0L) {
+                    throw IllegalArgumentException(
+                        "Enter a valid transfer amount"
+                    )
+                }
+
+                val transfer = FundTransfer(
+                    id = java.util.UUID.randomUUID().toString(),
+                    sourceAccountId = sourceAccountId,
+                    beneficiaryId = beneficiaryId,
+                    amountInMinorUnits = amountInMinorUnits,
+                    currency = sourceAccount.currency,
+                    status = TransferStatus.PENDING
+                )
+
+                val result = transferFundsUseCase(transfer)
+
+                _uiState.value = result.fold(
+                    onSuccess = {
+                        TransferUiState.Success(
+                            message = "Fund transfer successful",
+                            transactionId = it.id
+                        )
+                    },
+                    onFailure = {
+                        TransferUiState.Error(
+                            message = it.message ?: "Transfer failed"
+                        )
+                    }
+                )
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                _uiState.value = TransferUiState.Error(
+                    message = e.message ?: "Transfer failed"
+                )
+            }
         }
     }
 

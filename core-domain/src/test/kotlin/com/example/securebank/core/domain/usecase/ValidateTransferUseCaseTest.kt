@@ -19,7 +19,7 @@ class ValidateTransferUseCaseTest {
             id = "ACC-001",
             accountHolderName = "Test User",
             accountNumber = "1234567890",
-            balanceInPaise = 500_000L
+            balanceInMinorUnits = 500_000L
         )
     }
 
